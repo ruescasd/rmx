@@ -135,7 +135,6 @@ fn gen_proof(es: &Vec<Ciphertext>, e_primes: &Vec<Ciphertext>, r_primes: &Vec<Sc
     let (c_hats, r_hats) = gen_commitment_chain(h_initial, &u_primes);
     
     let r_bar: Scalar = rs.iter().sum();
-    // let r_bar = rs.iter().fold(Scalar::zero(), |a, b| a + b);
     
     let mut vs = vec![Scalar::one();perm.len()];
     for i in (0..(perm.len() - 1)).rev() {

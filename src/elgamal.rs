@@ -10,23 +10,6 @@ pub struct Ciphertext {
     pub b: RistrettoPoint
 }
 
-/* fn encode_u32(message: &u32) -> CompressedRistretto {
-    let bytes = bincode::serialize(message).unwrap();
-    
-    println!("encode_u32: {:?}", bytes);
-    return CompressedRistretto::from_slice(bytes.as_slice());
-    
-}
-
-fn decode_u32(point: CompressedRistretto) -> u32 {
-    let bytes = point.as_bytes();
-    let integer: u32 = bincode::deserialize(bytes).unwrap();
-    
-    println!("decode_u32: {:?}", bytes);
-    return integer;
-    
-}*/
-
 pub struct PublicKey(pub RistrettoPoint);
 
 impl PublicKey {
@@ -49,7 +32,6 @@ impl PrivateKey {
         return PublicKey(RISTRETTO_BASEPOINT_POINT * self.0);
     }
     pub fn decrypt(&self, c: Ciphertext) -> RistrettoPoint {
-        // c.b - (c.a * self.0)
         c.a - (c.b * self.0)
     }
 }
