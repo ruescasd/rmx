@@ -1,6 +1,5 @@
 #![allow(warnings)]
 
-
 extern crate rand_core;
 extern crate curve25519_dalek;
 extern crate rand;
