@@ -21,14 +21,6 @@ pub fn hash_source<T: ByteSource>(s: T) -> GenericArray<u8, U32> {
     return hasher.finalize();
 }
 
-/*pub fn hash_source_vec<T: ByteSource>(s: Vec<T>) -> GenericArray<u8, U32> {
-    let mut hasher = Sha256::new();
-    let bytes = concat_bytes(&s);
-    
-    hasher.update(bytes);
-    return hasher.finalize();
-}*/
-
 pub fn hash_bytes(v: Vec<u8>) -> GenericArray<u8, U32> {
     let mut hasher = Sha256::new();
     
@@ -54,12 +46,6 @@ impl ByteSource for RistrettoPoint {
 impl ByteSource for Scalar {
     fn get_bytes(&self) -> Vec<u8> {
         return self.as_bytes().to_vec();
-    }
-}
-
-impl ByteSource for u32 {
-    fn get_bytes(&self) -> Vec<u8> {
-        return self.to_be_bytes().to_vec();
     }
 }
 
