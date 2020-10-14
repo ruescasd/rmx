@@ -17,6 +17,7 @@ use rand::Rng;
 
 mod hashing;
 mod elgamal;
+mod element;
 
 use elgamal::*;
 
@@ -90,23 +91,31 @@ fn main() {
     println!("ok is {}", ok); 
 }
 
+use std::mem::{self, MaybeUninit};
+
 fn gen_shuffle(ciphertexts: &Vec<Ciphertext>, pk: &PublicKey) -> (Vec<Ciphertext>, Vec<Scalar>, Vec<usize>) {
     let mut csprng = OsRng;
     let perm: Vec<usize> = gen_permutation(ciphertexts.len());
+    
+    let mut e_primes = Vec::with_capacity(ciphertexts.len());
+    let mut rs = Vec::with_capacity(ciphertexts.len());
 
-    let (es, rs): (Vec<Ciphertext>, Vec<Scalar>) = ciphertexts.iter().map(|c| {
+    unsafe { 
+        rs.set_len(ciphertexts.len());
+        for i in 0..perm.len() {
+            let c = ciphertexts[perm[i]];
+    
             let r = Scalar::random(&mut csprng);
             let a = c.a + (r * pk.0);
             let b = c.b + (r * RISTRETTO_BASEPOINT_POINT);
             let c_ = Ciphertext {
                 a, b
             };
-            (c_, r)
+            e_primes.push(c_);
+            rs[perm[i]] = r;
         }
-    ).unzip();
-
-    let e_primes: Vec<Ciphertext> = perm.iter().map( |&i| es[i]).collect();
-    
+    }
+     
     (e_primes, rs, perm)
 }
 
@@ -420,5 +429,42 @@ mod tests {
         let mut proof = gen_proof(&es, &e_primes, &rs, &perm, &pk, &hs);
         let mut ok = check_proof(&proof, &es, &e_primes, &pk, &hs);
         assert_eq!(ok, false);
+    }
+
+   
+
+    #[test]
+    fn test_uninit() {
+        let data = {
+        
+            let mut data: [MaybeUninit<u32>; 10] = unsafe {
+                MaybeUninit::uninit().assume_init()
+            };
+
+            for i in 0..10 {
+                data[i] = MaybeUninit::new(i as u32);
+            }
+
+            unsafe { mem::transmute::<_, [u32; 10]>(data) }
+        };
+
+        let v: Vec<u32> = (0u32..10u32).collect();
+        assert_eq!(data.to_vec(), v);
+
+    }
+
+    #[test]
+    fn test_uninit2() {
+        
+        let mut v: Vec<Ciphertext> = Vec::with_capacity(10);
+        unsafe { 
+            v.set_len(10);
+        }
+        v[0] = Ciphertext { 
+            a: RistrettoPoint::default(), 
+            b: RistrettoPoint::default()
+        };
+        
+        println!("{:?}", v);
     }
 }
