@@ -109,7 +109,8 @@ fn gen_shuffle(ciphertexts: &Vec<Ciphertext>, pk: &PublicKey) -> (Vec<Ciphertext
             let a = c.a + (r * pk.0);
             let b = c.b + (r * RISTRETTO_BASEPOINT_POINT);
             let c_ = Ciphertext {
-                a, b
+                a: a, 
+                b: b
             };
             e_primes.push(c_);
             rs[perm[i]] = r;
