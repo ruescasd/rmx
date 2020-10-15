@@ -68,9 +68,6 @@ fn main() {
 
     for _ in 0..10 {
         let plaintext: RistrettoPoint = RistrettoPoint::random(&mut csprng);
-        let h = hashing::hash_bytes(plaintext.compress().as_bytes().to_vec());
-        let s = hashing::hex(h.as_slice());
-        println!("{:?}", s);
         let c = pk.encrypt(plaintext, &mut csprng);
         es.push(c);
     }
@@ -79,12 +76,6 @@ fn main() {
     let (e_primes, rs, perm) = gen_shuffle(&es, &pk);
     
     println!("{:?}", perm);
-
-    for &c in e_primes.iter() {
-        let h = hashing::hash_bytes(sk.decrypt(c).compress().as_bytes().to_vec());
-        let s = hashing::hex(h.as_slice());
-        println!("{:?}", s);
-    }
     
     let proof = gen_proof(&es, &e_primes, &rs, &perm, &pk, &generators);
     let ok = check_proof(&proof, &es, &e_primes, &pk, &generators);

@@ -13,21 +13,6 @@ pub trait ByteSource {
     fn get_bytes(&self) -> Vec<u8>;
 }
 
-pub fn hash_source<T: ByteSource>(s: T) -> GenericArray<u8, U32> {
-    let mut hasher = Sha256::new();
-    let bytes = s.get_bytes();
-    
-    hasher.update(bytes);
-    return hasher.finalize();
-}
-
-pub fn hash_bytes(v: Vec<u8>) -> GenericArray<u8, U32> {
-    let mut hasher = Sha256::new();
-    
-    hasher.update(v);
-    return hasher.finalize();
-}
-
 impl ByteSource for Ciphertext {
     fn get_bytes(&self) -> Vec<u8> {
         let mut a = self.a.compress().to_bytes().to_vec();
